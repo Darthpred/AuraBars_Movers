@@ -33,7 +33,7 @@ function UF:Construct_TargetFrame(frame)
 	table.insert(frame.__elements, UF.SmartAuraDisplay)
 	frame:RegisterEvent('PLAYER_TARGET_CHANGED', UF.SmartAuraDisplay)
 	
-	frame.AuraBars = self:Construct_AuraBarHeader(frame)
+	frame.AuraBars = self:Construct_AuraBarHeader(frame, true)
 	
 	frame:Point('BOTTOMRIGHT', E.UIParent, 'BOTTOM', 417, 75)
 	E:CreateMover(frame, frame:GetName()..'Mover', 'Target Frame', nil, nil, nil, 'ALL,SOLO')
@@ -504,11 +504,11 @@ function UF:Update_TargetFrame(frame, db)
 			local healthColor = UF.db.colors.health
 			local attachTo = frame
 			
-			if db.aurabar.attachTo == 'BUFFS' then
+			--[[if db.aurabar.attachTo == 'BUFFS' then
 				attachTo = frame.Buffs
 			elseif db.aurabar.attachTo == 'DEBUFFS' then
 				attachTo = frame.Debuffs
-			end
+			end]]
 			
 			local anchorPoint, anchorTo = 'BOTTOM', 'TOP'
 			if db.aurabar.anchorPoint == 'BELOW' then
@@ -517,7 +517,7 @@ function UF:Update_TargetFrame(frame, db)
 			
 			auraBars:ClearAllPoints()
 			auraBars:SetPoint(anchorPoint..'LEFT', attachTo, anchorTo..'LEFT', POWERBAR_OFFSET, 0)
-			auraBars:SetPoint(anchorPoint..'RIGHT', attachTo, anchorTo..'RIGHT')
+			auraBars:SetPoint(anchorPoint..'RIGHT', attachTo, anchorTo..'RIGHT')			
 			auraBars.buffColor = {healthColor.r, healthColor.b, healthColor.g}
 			auraBars.down = db.aurabar.anchorPoint == 'BELOW'
 			auraBars:SetAnchors()

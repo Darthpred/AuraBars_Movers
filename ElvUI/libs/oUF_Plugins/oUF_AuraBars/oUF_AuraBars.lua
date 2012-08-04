@@ -39,6 +39,7 @@ end
 
 local function SetAnchors(self)
 	local bars = self.bars
+	local Fparent = self:GetParent()
 
 	for index = 1, #bars do
 		local frame = bars[index]
@@ -47,18 +48,20 @@ local function SetAnchors(self)
 		frame:ClearAllPoints()
 		if self.down == true then
 			if self == anchor then -- Root frame so indent for icon
-				frame:SetPoint('TOPLEFT', anchor, 'BOTTOMLEFT', (frame:GetHeight() + (self.gap or 0) ), 0)
+				frame:SetPoint('TOPLEFT', Fparent:GetName()..'AuraMover', 'BOTTOMLEFT', (frame:GetHeight() + (self.gap or 0) ), 0)
 			else
 				frame:SetPoint('TOPLEFT', anchor, 'BOTTOMLEFT', 0, (-self.spacing or 0))
 			end
 		else
 			if self == anchor then -- Root frame so indent for icon
-				frame:SetPoint('BOTTOMLEFT', anchor, 'TOPLEFT', (frame:GetHeight() + (self.gap or 0) ), 0)
+				frame:SetPoint('BOTTOMLEFT', Fparent:GetName()..'AuraMover', 'TOPLEFT', (frame:GetHeight() + (self.gap or 0) ), 0)
 			else
 				frame:SetPoint('BOTTOMLEFT', anchor, 'TOPLEFT', 0, (self.spacing or 0))
 			end
 		end
 	end
+	
+	Fparent.AuraBars:SetHeight(10) --For making movers comfortable to drag, without freaking pixel hunting
 end
 
 local function CreateAuraBar(oUF, anchor)
@@ -79,13 +82,13 @@ local function CreateAuraBar(oUF, anchor)
 	
 	if auraBarParent.down == true then
 		if auraBarParent == anchor then -- Root frame so indent for icon
-			frame:SetPoint('TOPLEFT', anchor, 'BOTTOMLEFT', (frame:GetHeight() + (auraBarParent.gap or 0) ), 0)
+			frame:SetPoint('TOPLEFT', auraBarParent.mover, 'BOTTOMLEFT', (frame:GetHeight() + (auraBarParent.gap or 0) ), 0)
 		else
 			frame:SetPoint('TOPLEFT', anchor, 'BOTTOMLEFT', 0, (-auraBarParent.spacing or 0))
 		end
 	else
 		if auraBarParent == anchor then -- Root frame so indent for icon
-			frame:SetPoint('BOTTOMLEFT', anchor, 'TOPLEFT', (frame:GetHeight() + (auraBarParent.gap or 0) ), 0)
+			frame:SetPoint('BOTTOMLEFT', auraBarParent.mover, 'TOPLEFT', (frame:GetHeight() + (auraBarParent.gap or 0) ), 0)
 		else
 			frame:SetPoint('BOTTOMLEFT', anchor, 'TOPLEFT', 0, (auraBarParent.spacing or 0))
 		end

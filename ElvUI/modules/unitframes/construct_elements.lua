@@ -762,7 +762,7 @@ function UF:Construct_AuraBars()
 	end)
 end
 
-function UF:Construct_AuraBarHeader(frame)
+function UF:Construct_AuraBarHeader(frame, Mov) --Added a new argument to determine if mover is needed. Just in case
 	local auraBar = CreateFrame('Frame', nil, frame)
 	auraBar.PostCreateBar = UF.Construct_AuraBars
 	auraBar.gap = 1
@@ -771,6 +771,7 @@ function UF:Construct_AuraBarHeader(frame)
 	auraBar.sort = true
 	auraBar.debuffColor = {0.8, 0.1, 0.1}
 	auraBar.filter = UF.AuraBarFilter
+	auraBar:SetPoint("BOTTOM", frame, "TOP", 0, 0) --added as it's needed to create mover. It uses parent frames position or something. Also another default position line >_>
 
 	hooksecurefunc(GameTooltip, "SetUnitAura", function(self,...)
 		if self.auraBarLine and self.numLines ~= self:NumLines() then
@@ -780,6 +781,13 @@ function UF:Construct_AuraBarHeader(frame)
 			end
 		end
 	end)	
+	
+	--Creating mover using the neme of the frame. Crappy code, I know.
+	if Mov then
+		local Fname = frame:GetName()
+		local MovName = Fname:gsub("ElvUF_", "")
+		E:CreateMover(auraBar, Fname..'AuraMover',  MovName..' Aura Bars', nil, nil, nil, 'ALL,SOLO')
+	end
 	
 	return auraBar
 end

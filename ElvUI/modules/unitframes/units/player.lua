@@ -52,7 +52,7 @@ function UF:Construct_PlayerFrame(frame)
 	frame.DebuffHighlight = self:Construct_DebuffHighlight(frame)
 	frame.HealPrediction = self:Construct_HealComm(frame)
 
-	frame.AuraBars = self:Construct_AuraBarHeader(frame)
+	frame.AuraBars = self:Construct_AuraBarHeader(frame, true) --added a new argument for function, look and construct_elements.lua
 		
 	frame.CombatFade = true
 
@@ -1006,13 +1006,14 @@ function UF:Update_PlayerFrame(frame, db)
 			end
 			auraBars:Show()
 			local healthColor = UF.db.colors.health
-			local attachTo = frame
+			local attachTo = frame --Actually isn't needed, left it for now
 			
-			if db.aurabar.attachTo == 'BUFFS' then
+			--Commented stuff that isn't needed due to movers are not supposed to be dependable from that
+			--[[if db.aurabar.attachTo == 'BUFFS' then
 				attachTo = frame.Buffs
 			elseif db.aurabar.attachTo == 'DEBUFFS' then
 				attachTo = frame.Debuffs
-			end
+			end]]
 			
 			local anchorPoint, anchorTo = 'BOTTOM', 'TOP'
 			if db.aurabar.anchorPoint == 'BELOW' then
@@ -1020,9 +1021,10 @@ function UF:Update_PlayerFrame(frame, db)
 			end
 			
 			auraBars:ClearAllPoints()
-			auraBars:SetPoint(anchorPoint..'LEFT', attachTo, anchorTo..'LEFT')
+			--attach to can be replaced by just 'frame'. Also I choose the default position for testing to be docked to frame
+			auraBars:SetPoint(anchorPoint..'LEFT', attachTo, anchorTo..'LEFT', 0, 0)
 			auraBars:SetPoint(anchorPoint..'RIGHT', attachTo, anchorTo..'RIGHT', -POWERBAR_OFFSET, 0)
-
+						
 			auraBars.buffColor = {healthColor.r, healthColor.b, healthColor.g}
 			auraBars.down = db.aurabar.anchorPoint == 'BELOW'
 			auraBars:SetAnchors()
