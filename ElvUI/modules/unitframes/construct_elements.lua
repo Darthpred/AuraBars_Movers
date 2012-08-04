@@ -762,7 +762,7 @@ function UF:Construct_AuraBars()
 	end)
 end
 
-function UF:Construct_AuraBarHeader(frame, Mov) --Added a new argument to determine if mover is needed. Just in case
+function UF:Construct_AuraBarHeader(frame, MovName) --Added a new argument to determine if mover is needed and it's name
 	local auraBar = CreateFrame('Frame', nil, frame)
 	auraBar.PostCreateBar = UF.Construct_AuraBars
 	auraBar.gap = 1
@@ -783,10 +783,9 @@ function UF:Construct_AuraBarHeader(frame, Mov) --Added a new argument to determ
 	end)	
 	
 	--Creating mover using the neme of the frame. Crappy code, I know.
-	if Mov then
+	if MovName then
 		local Fname = frame:GetName()
-		local MovName = Fname:gsub("ElvUF_", "")
-		E:CreateMover(auraBar, Fname..'AuraMover',  MovName..' Aura Bars', nil, nil, nil, 'ALL,SOLO')
+		E:CreateMover(auraBar, Fname..'AuraMover',  MovName, nil, nil, nil, 'ALL,SOLO')
 	end
 	
 	return auraBar
