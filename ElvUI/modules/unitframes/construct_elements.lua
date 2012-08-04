@@ -771,8 +771,16 @@ function UF:Construct_AuraBarHeader(frame, MovName) --Added a new argument to de
 	auraBar.sort = true
 	auraBar.debuffColor = {0.8, 0.1, 0.1}
 	auraBar.filter = UF.AuraBarFilter
-	auraBar:SetPoint("BOTTOM", frame, "TOP", 0, 0) --added as it's needed to create mover. It uses parent frames position or something. Also another default position line >_>
+	--auraBar:SetPoint("BOTTOM", frame, "TOP", 0, 0) --added as it's needed to create mover. It uses parent frames position or something. Also another default position line >_>
 
+	--The holder stuff
+	local holder = CreateFrame('Frame', nil, auraBar)
+	holder:Size(auraBar:GetWidth(), auraBar:GetHeight())
+	holder:Point("BOTTOM", frame, "TOP", 0, 0)
+	auraBar:SetPoint("BOTTOM", holder, "TOP", 0, 0)
+		
+	auraBar.Holder = holder
+	
 	hooksecurefunc(GameTooltip, "SetUnitAura", function(self,...)
 		if self.auraBarLine and self.numLines ~= self:NumLines() then
 			self:AddLine(L['Hold shift + right click to blacklist this aura.'])
@@ -785,7 +793,7 @@ function UF:Construct_AuraBarHeader(frame, MovName) --Added a new argument to de
 	--Creating mover using the neme of the frame. Crappy code, I know.
 	if MovName then
 		local Fname = frame:GetName()
-		E:CreateMover(auraBar, Fname..'AuraMover',  MovName, nil, nil, nil, 'ALL,SOLO')
+		E:CreateMover(auraBar.Holder, Fname..'AuraMover',  MovName, nil, nil, nil, 'ALL,SOLO')
 	end
 	
 	return auraBar
