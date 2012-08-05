@@ -1000,13 +1000,6 @@ function UF:Update_PlayerFrame(frame, db)
 			auraBars.enemyAuraType = db.aurabar.enemyAuraType
 			
 			local healthColor = UF.db.colors.health
-			--[[local attachTo = frame
-			
-			if db.aurabar.attachTo == 'BUFFS' then
-				attachTo = frame.Buffs
-			elseif db.aurabar.attachTo == 'DEBUFFS' then
-				attachTo = frame.Debuffs
-			end]]
 			
 			local anchorPoint, anchorTo = 'BOTTOM', 'TOP'
 			if db.aurabar.anchorPoint == 'BELOW' then
