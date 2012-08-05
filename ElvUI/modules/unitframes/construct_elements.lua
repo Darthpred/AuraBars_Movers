@@ -773,7 +773,7 @@ function UF:Construct_AuraBarHeader(frame, MovName) --Add new argument to determ
 	auraBar.filter = UF.AuraBarFilter
 
 	--Create Holder frame for our AuraBar Mover
-	local holder = CreateFrame('Frame', "Test", auraBar)
+	local holder = CreateFrame('Frame', nil, auraBar)
 	holder:Point("BOTTOM", frame, "TOP", 0, 0)
 	auraBar:SetPoint("BOTTOM", holder, "TOP", 0, 0)
 	auraBar.Holder = holder
