@@ -33,7 +33,7 @@ function UF:Construct_TargetFrame(frame)
 	table.insert(frame.__elements, UF.SmartAuraDisplay)
 	frame:RegisterEvent('PLAYER_TARGET_CHANGED', UF.SmartAuraDisplay)
 	
-	frame.AuraBars = self:Construct_AuraBarHeader(frame, "Target Aura Bars")
+	frame.AuraBars = self:Construct_AuraBarHeader(frame)
 	
 	frame:Point('BOTTOMRIGHT', E.UIParent, 'BOTTOM', 417, 75)
 	E:CreateMover(frame, frame:GetName()..'Mover', 'Target Frame', nil, nil, nil, 'ALL,SOLO')
@@ -104,15 +104,10 @@ function UF:Update_TargetFrame(frame, db)
 		health.Smooth = self.db.smoothbars
 
 		--Text
-		if db.health.text then
-			health.value:Show()
-			
-			local x, y = self:GetPositionOffset(db.health.position)
-			health.value:ClearAllPoints()
-			health.value:Point(db.health.position, health, db.health.position, x, y)
-		else
-			health.value:Hide()
-		end
+		local x, y = self:GetPositionOffset(db.health.position)
+		health.value:ClearAllPoints()
+		health.value:Point(db.health.position, health, db.health.position, x, y)
+		frame:Tag(health.value, db.health.text_format)
 		
 		--Colors
 		health.colorSmooth = nil
@@ -156,17 +151,13 @@ function UF:Update_TargetFrame(frame, db)
 	--Name
 	do
 		local name = frame.Name
-		if db.name.enable then
-			name:Show()
-			
-			if not db.power.hideonnpc then
-				local x, y = self:GetPositionOffset(db.name.position)
-				name:ClearAllPoints()
-				name:Point(db.name.position, frame.Health, db.name.position, x, y)				
-			end
-		else
-			name:Hide()
+		if not db.power.hideonnpc then
+			local x, y = self:GetPositionOffset(db.name.position)
+			name:ClearAllPoints()
+			name:Point(db.name.position, frame.Health, db.name.position, x, y)				
 		end
+		
+		frame:Tag(name, db.name.text_format)
 	end	
 	
 	--Power
@@ -181,15 +172,10 @@ function UF:Update_TargetFrame(frame, db)
 			power.Smooth = self.db.smoothbars
 			
 			--Text
-			if db.power.text then
-				power.value:Show()
-				
-				local x, y = self:GetPositionOffset(db.power.position)
-				power.value:ClearAllPoints()
-				power.value:Point(db.power.position, frame.Health, db.power.position, x, y)			
-			else
-				power.value:Hide()
-			end
+			local x, y = self:GetPositionOffset(db.power.position)
+			power.value:ClearAllPoints()
+			power.value:Point(db.power.position, frame.Health, db.power.position, x, y)		
+			frame:Tag(power.value, db.power.text_format)
 			
 			--Colors
 			power.colorClass = nil
@@ -496,11 +482,6 @@ function UF:Update_TargetFrame(frame, db)
 	do
 		local auraBars = frame.AuraBars
 		
-		--Set size of mover
-		auraBars.Holder:Width(db.width)
-		auraBars.Holder:Height(20)
-		auraBars.Holder:GetScript('OnSizeChanged')(auraBars.Holder)
-		
 		if db.aurabar.enable then
 			if not frame:IsElementEnabled('AuraBars') then
 				frame:EnableElement('AuraBars')
@@ -510,6 +491,13 @@ function UF:Update_TargetFrame(frame, db)
 			auraBars.enemyAuraType = db.aurabar.enemyAuraType			
 			
 			local healthColor = UF.db.colors.health
+			local attachTo = frame
+			
+			if db.aurabar.attachTo == 'BUFFS' then
+				attachTo = frame.Buffs
+			elseif db.aurabar.attachTo == 'DEBUFFS' then
+				attachTo = frame.Debuffs
+			end
 			
 			local anchorPoint, anchorTo = 'BOTTOM', 'TOP'
 			if db.aurabar.anchorPoint == 'BELOW' then
@@ -517,15 +505,11 @@ function UF:Update_TargetFrame(frame, db)
 			end
 			
 			auraBars:ClearAllPoints()
-			auraBars:SetPoint(anchorPoint..'LEFT', auraBars.Holder, anchorTo..'LEFT', POWERBAR_OFFSET, 0)
-			auraBars:SetPoint(anchorPoint..'RIGHT', auraBars.Holder, anchorTo..'RIGHT')
+			auraBars:SetPoint(anchorPoint..'LEFT', attachTo, anchorTo..'LEFT', POWERBAR_OFFSET, 0)
+			auraBars:SetPoint(anchorPoint..'RIGHT', attachTo, anchorTo..'RIGHT')
 			auraBars.buffColor = {healthColor.r, healthColor.b, healthColor.g}
 			auraBars.down = db.aurabar.anchorPoint == 'BELOW'
 			auraBars:SetAnchors()
-			
-			--We do this to prevent the AuraBars being anchored to buffs or debuffs when "Smart Auras" setting is used
-			--The code which repositions Aura Bars is in update_elements.lua line 1325 and line 1340
-			auraBars.SetPoint = noop
 		else
 			if frame:IsElementEnabled('AuraBars') then
 				frame:DisableElement('AuraBars')
