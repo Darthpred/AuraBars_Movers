@@ -1,48 +1,39 @@
 local E, L, V, P, G, _ = unpack(select(2, ...)); --Inport: Engine, Locales, PrivateDB, ProfileDB, GlobalDB, Localize Underscore
 local UF = E:GetModule('UnitFrames');
 
-
-
 local _, ns = ...
 local ElvUF = ns.oUF
 assert(ElvUF, "ElvUI was unable to locate oUF.")
 
-function UF:Construct_TargetFrame(frame)	
+function UF:Construct_FocusFrame(frame)	
 	frame.Health = self:Construct_HealthBar(frame, true, true, 'RIGHT')
 	frame.Health.frequentUpdates = true;
 	
 	frame.Power = self:Construct_PowerBar(frame, true, true, 'LEFT', false)
-	frame.Power.frequentUpdates = true;
 	
 	frame.Name = self:Construct_NameText(frame)
 	
-	frame.Portrait = self:Construct_Portrait(frame)
-	
 	frame.Buffs = self:Construct_Buffs(frame)
-
-	frame.Debuffs = self:Construct_Debuffs(frame)
-
-	frame.Castbar = self:Construct_Castbar(frame, 'RIGHT', 'Target Castbar')
+	
+	frame.Castbar = self:Construct_Castbar(frame, 'LEFT', 'Focus Castbar')
 	frame.Castbar.SafeZone = nil
 	frame.Castbar.LatencyTexture:Hide()
-	frame.RaidIcon = UF:Construct_RaidIcon(frame)		
-	frame.CPoints = self:Construct_Combobar(frame)
+	frame.RaidIcon = UF:Construct_RaidIcon(frame)	
+	frame.Debuffs = self:Construct_Debuffs(frame)
 	frame.HealPrediction = self:Construct_HealComm(frame)
-	frame.DebuffHighlight = self:Construct_DebuffHighlight(frame)
+	frame.AuraBars = self:Construct_AuraBarHeader(frame, "Focus Aura Bars")
 	
 	table.insert(frame.__elements, UF.SmartAuraDisplay)
-	frame:RegisterEvent('PLAYER_TARGET_CHANGED', UF.SmartAuraDisplay)
-	
-	frame.AuraBars = self:Construct_AuraBarHeader(frame, "Target Aura Bars")
-	
-	frame:Point('BOTTOMRIGHT', E.UIParent, 'BOTTOM', 417, 75)
-	E:CreateMover(frame, frame:GetName()..'Mover', 'Target Frame', nil, nil, nil, 'ALL,SOLO')
+	frame:RegisterEvent('PLAYER_FOCUS_CHANGED', UF.SmartAuraDisplay)	
+
+	frame:Point('BOTTOMRIGHT', ElvUF_Target, 'TOPRIGHT', 0, 220)
+	E:CreateMover(frame, frame:GetName()..'Mover', 'Focus Frame', nil, nil, nil, 'ALL,SOLO')
 end
 
-function UF:Update_TargetFrame(frame, db)
+function UF:Update_FocusFrame(frame, db)
 	frame.db = db
 	local BORDER = E:Scale(2)
-	local SPACING = E:Scale(1)	
+	local SPACING = E:Scale(1)
 	local UNIT_WIDTH = db.width
 	local UNIT_HEIGHT = db.height
 	
@@ -52,15 +43,6 @@ function UF:Update_TargetFrame(frame, db)
 	local POWERBAR_OFFSET = db.power.offset
 	local POWERBAR_HEIGHT = db.power.height
 	local POWERBAR_WIDTH = db.width - (BORDER*2)
-	
-	local USE_COMBOBAR = db.combobar.enable
-	local USE_MINI_COMBOBAR = db.combobar.fill == "spaced" and USE_COMBOBAR
-	local COMBOBAR_HEIGHT = db.combobar.height
-	local COMBOBAR_WIDTH = db.width - (BORDER*2)
-	
-	local USE_PORTRAIT = db.portrait.enable
-	local USE_PORTRAIT_OVERLAY = db.portrait.overlay and USE_PORTRAIT
-	local PORTRAIT_WIDTH = db.portrait.width
 	
 	local unit = self.unit
 	
@@ -73,30 +55,12 @@ function UF:Update_TargetFrame(frame, db)
 		if not USE_POWERBAR then
 			POWERBAR_HEIGHT = 0
 		end	
-	
-		if USE_PORTRAIT_OVERLAY or not USE_PORTRAIT then
-			PORTRAIT_WIDTH = 0
-			if USE_POWERBAR_OFFSET then
-				COMBOBAR_WIDTH = COMBOBAR_WIDTH - POWERBAR_OFFSET
-			end			
-		elseif USE_PORTRAIT then
-			COMBOBAR_WIDTH = math.ceil((UNIT_WIDTH - (BORDER*2)) - PORTRAIT_WIDTH)
-			
-			if USE_POWERBAR_OFFSET then
-				COMBOBAR_WIDTH = COMBOBAR_WIDTH - POWERBAR_OFFSET
-			end
-		elseif USE_POWERBAR_OFFSET then
-			COMBOBAR_WIDTH = COMBOBAR_WIDTH - POWERBAR_OFFSET
-		end
-
-		if USE_MINI_COMBOBAR then
-			COMBOBAR_WIDTH = COMBOBAR_WIDTH * 4/5
-		end	
 		
 		if USE_MINI_POWERBAR then
 			POWERBAR_WIDTH = POWERBAR_WIDTH / 2
 		end
 	end
+	
 	
 	--Health
 	do
@@ -134,22 +98,12 @@ function UF:Update_TargetFrame(frame, db)
 		health:ClearAllPoints()
 		health:Point("TOPRIGHT", frame, "TOPRIGHT", -BORDER, -BORDER)
 		if USE_POWERBAR_OFFSET then			
+			health:Point("TOPRIGHT", frame, "TOPRIGHT", -(BORDER+POWERBAR_OFFSET), -BORDER)
 			health:Point("BOTTOMLEFT", frame, "BOTTOMLEFT", BORDER+POWERBAR_OFFSET, BORDER+POWERBAR_OFFSET)
 		elseif USE_MINI_POWERBAR then
 			health:Point("BOTTOMLEFT", frame, "BOTTOMLEFT", BORDER, BORDER + (POWERBAR_HEIGHT/2))
 		else
 			health:Point("BOTTOMLEFT", frame, "BOTTOMLEFT", BORDER, BORDER + POWERBAR_HEIGHT)
-		end
-		
-		health.bg:ClearAllPoints()
-		if not USE_PORTRAIT_OVERLAY then
-			health:Point("TOPRIGHT", -(PORTRAIT_WIDTH+BORDER), -BORDER)
-			health.bg:SetParent(health)
-			health.bg:SetAllPoints()
-		else
-			health.bg:Point('BOTTOMLEFT', health:GetStatusBarTexture(), 'BOTTOMRIGHT')
-			health.bg:Point('TOPRIGHT', health)		
-			health.bg:SetParent(frame.Portrait.overlay)			
 		end
 	end
 	
@@ -172,12 +126,12 @@ function UF:Update_TargetFrame(frame, db)
 	--Power
 	do
 		local power = frame.Power
-		
 		if USE_POWERBAR then
 			if not frame:IsElementEnabled('Power') then
 				frame:EnableElement('Power')
 				power:Show()
-			end				
+			end		
+			
 			power.Smooth = self.db.smoothbars
 			
 			--Text
@@ -205,8 +159,8 @@ function UF:Update_TargetFrame(frame, db)
 			--Position
 			power:ClearAllPoints()
 			if USE_POWERBAR_OFFSET then
-				power:Point("TOPLEFT", frame.Health, "TOPLEFT", -POWERBAR_OFFSET, -POWERBAR_OFFSET)
-				power:Point("BOTTOMRIGHT", frame.Health, "BOTTOMRIGHT", -POWERBAR_OFFSET, -POWERBAR_OFFSET)
+				power:Point("TOPLEFT", frame, "TOPLEFT", BORDER, -POWERBAR_OFFSET)
+				power:Point("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -BORDER, BORDER)
 				power:SetFrameStrata("LOW")
 				power:SetFrameLevel(2)
 			elseif USE_MINI_POWERBAR then
@@ -217,56 +171,15 @@ function UF:Update_TargetFrame(frame, db)
 				power:SetFrameLevel(frame:GetFrameLevel() + 3)
 			else
 				power:Point("TOPLEFT", frame.Health.backdrop, "BOTTOMLEFT", BORDER, -(BORDER + SPACING))
-				power:Point("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -(BORDER + PORTRAIT_WIDTH), BORDER)
+				power:Point("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -BORDER, BORDER)
 			end
 		elseif frame:IsElementEnabled('Power') then
 			frame:DisableElement('Power')
-			power:Hide()
+			power:Hide()	
 			power.value:Hide()
 		end
 	end
 	
-	--Portrait
-	do
-		local portrait = frame.Portrait
-		
-		--Set Points
-		if USE_PORTRAIT then
-			if not frame:IsElementEnabled('Portrait') then
-				frame:EnableElement('Portrait')
-			end
-			
-			portrait:ClearAllPoints()
-			
-			if USE_PORTRAIT_OVERLAY then
-				portrait:SetFrameLevel(frame.Health:GetFrameLevel() + 1)
-				portrait:SetAllPoints(frame.Health)
-				portrait:SetAlpha(0.3)
-				portrait:Show()		
-			else
-				portrait:SetAlpha(1)
-				portrait:Show()
-				
-				portrait.backdrop:ClearAllPoints()
-				portrait.backdrop:SetPoint("TOPRIGHT", frame, "TOPRIGHT")
-						
-				if USE_MINI_POWERBAR or USE_POWERBAR_OFFSET or not USE_POWERBAR then
-					portrait.backdrop:Point("BOTTOMLEFT", frame.Health.backdrop, "BOTTOMRIGHT", SPACING, 0)
-				else
-					portrait.backdrop:Point("BOTTOMLEFT", frame.Power.backdrop, "BOTTOMRIGHT", SPACING, 0)
-				end	
-							
-				portrait:Point('BOTTOMLEFT', portrait.backdrop, 'BOTTOMLEFT', BORDER, BORDER)		
-				portrait:Point('TOPRIGHT', portrait.backdrop, 'TOPRIGHT', -BORDER, -BORDER)				
-			end
-		else
-			if frame:IsElementEnabled('Portrait') then
-				frame:DisableElement('Portrait')
-				portrait:Hide()
-			end		
-		end
-	end
-
 	--Auras Disable/Enable
 	--Only do if both debuffs and buffs aren't being used.
 	do
@@ -369,7 +282,7 @@ function UF:Update_TargetFrame(frame, db)
 			castbar.Icon.bg:Width(db.castbar.height + 4)
 			castbar.Icon.bg:Height(db.castbar.height + 4)
 			
-			castbar:Width(db.castbar.width - castbar.Icon.bg:GetWidth() - 5)
+			castbar:Width(db.castbar.width - castbar.Icon.bg:GetWidth() - 4)
 			castbar.Icon.bg:Show()
 		else
 			castbar.ButtonIcon.bg:Hide()
@@ -380,84 +293,14 @@ function UF:Update_TargetFrame(frame, db)
 			castbar.Spark:Show()
 		else
 			castbar.Spark:Hide()
-		end		
+		end
 
 		if db.castbar.enable and not frame:IsElementEnabled('Castbar') then
 			frame:EnableElement('Castbar')
 		elseif not db.castbar.enable and frame:IsElementEnabled('Castbar') then
 			frame:DisableElement('Castbar')	
 		end			
-	end
-	
-	--Combo Bar
-	do
-		local CPoints = frame.CPoints
-		CPoints:ClearAllPoints()
-		if USE_MINI_COMBOBAR then
-			CPoints:Point("CENTER", frame.Health.backdrop, "TOP", -(BORDER*3 + 6), -SPACING)
-			CPoints:SetFrameStrata("MEDIUM")
-		else
-			CPoints:Point("BOTTOMLEFT", frame.Health.backdrop, "TOPLEFT", BORDER, BORDER+SPACING)
-			CPoints:SetFrameStrata("LOW")
-		end
-
-		CPoints:Width(COMBOBAR_WIDTH)
-		CPoints:Height(COMBOBAR_HEIGHT - (BORDER*2))			
-		
-		for i = 1, MAX_COMBO_POINTS do
-			CPoints[i]:SetHeight(CPoints:GetHeight())
-			CPoints[i]:SetWidth(E:Scale(CPoints:GetWidth() - (MAX_COMBO_POINTS - 1)) / MAX_COMBO_POINTS)	
-			if USE_MINI_COMBOBAR then
-				CPoints[i].backdrop:Show()
-			else
-				CPoints[i].backdrop:Hide()	
-			end
-			
-			CPoints[i]:ClearAllPoints()
-			if i == 1 then
-				CPoints[i]:SetPoint("LEFT", CPoints)
-			else
-				if USE_MINI_COMBOBAR then
-					CPoints[i]:Point("LEFT", CPoints[i-1], "RIGHT", SPACING+(BORDER*2)+2, 0)
-				else
-					CPoints[i]:Point("LEFT", CPoints[i-1], "RIGHT", SPACING, 0)
-				end
-			end	
-			
-			if not USE_MINI_COMBOBAR then
-				CPoints[i].backdrop:Hide()
-			else
-				CPoints[i].backdrop:Show()
-			end					
-		end
-		
-		if not USE_MINI_COMBOBAR then
-			CPoints.backdrop:Show()
-		else
-			CPoints.backdrop:Hide()
-		end		
-
-		if USE_COMBOBAR and not frame:IsElementEnabled('CPoints') then
-			frame:EnableElement('CPoints')
-		elseif not USE_COMBOBAR and frame:IsElementEnabled('CPoints') then
-			frame:DisableElement('CPoints')	
-			CPoints:Hide()
-		end				
-	end
-	
-	--Debuff Highlight
-	do
-		local dbh = frame.DebuffHighlight
-		if E.db.unitframe.debuffHighlighting then
-			if not frame:IsElementEnabled('DebuffHighlight') then
-				frame:EnableElement('DebuffHighlight')
-			end
-		else
-			if frame:IsElementEnabled('DebuffHighlight') then
-				frame:DisableElement('DebuffHighlight')
-			end		
-		end
-	end
+	end	
 	
 	--OverHealing
 	do
@@ -476,15 +319,7 @@ function UF:Update_TargetFrame(frame, db)
 			healPrediction.otherBar:ClearAllPoints()
 			healPrediction.otherBar:SetPoint('TOPLEFT', healPrediction.myBar:GetStatusBarTexture(), 'TOPRIGHT')	
 			healPrediction.otherBar:SetPoint('BOTTOMLEFT', healPrediction.myBar:GetStatusBarTexture(), 'BOTTOMRIGHT')	
-			healPrediction.otherBar:Width(db.width - (BORDER*2))
-			
-			if not USE_PORTRAIT_OVERLAY then
-				healPrediction.myBar:SetParent(frame)
-				healPrediction.otherBar:SetParent(frame)
-			else	
-				healPrediction.myBar:SetParent(frame.Portrait.overlay)		
-				healPrediction.otherBar:SetParent(frame.Portrait.overlay)					
-			end			
+			healPrediction.otherBar:Width(db.width - (BORDER*2))	
 		else
 			if frame:IsElementEnabled('HealPrediction') then
 				frame:DisableElement('HealPrediction')
@@ -505,9 +340,10 @@ function UF:Update_TargetFrame(frame, db)
 			if not frame:IsElementEnabled('AuraBars') then
 				frame:EnableElement('AuraBars')
 			end
+			
 			auraBars:Show()
 			auraBars.friendlyAuraType = db.aurabar.friendlyAuraType
-			auraBars.enemyAuraType = db.aurabar.enemyAuraType			
+			auraBars.enemyAuraType = db.aurabar.enemyAuraType
 			
 			local healthColor = UF.db.colors.health
 			
@@ -518,7 +354,7 @@ function UF:Update_TargetFrame(frame, db)
 			
 			auraBars:ClearAllPoints()
 			auraBars:SetPoint(anchorPoint..'LEFT', auraBars.Holder, anchorTo..'LEFT', POWERBAR_OFFSET, 0)
-			auraBars:SetPoint(anchorPoint..'RIGHT', auraBars.Holder, anchorTo..'RIGHT')
+			auraBars:SetPoint(anchorPoint..'RIGHT', auraBars.Holder, anchorTo..'RIGHT', -POWERBAR_OFFSET, 0)
 			auraBars.buffColor = {healthColor.r, healthColor.b, healthColor.g}
 			auraBars.down = db.aurabar.anchorPoint == 'BELOW'
 			auraBars:SetAnchors()
@@ -533,9 +369,8 @@ function UF:Update_TargetFrame(frame, db)
 			end		
 		end
 	end
-	
-	E:SetMoverSnapOffset(frame:GetName()..'Mover', -(12 + db.castbar.height))
+		
 	frame:UpdateAllElements()
 end
 
-tinsert(UF['unitstoload'], 'target')
+tinsert(UF['unitstoload'], 'focus')
