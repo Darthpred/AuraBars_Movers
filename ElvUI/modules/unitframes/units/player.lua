@@ -52,7 +52,7 @@ function UF:Construct_PlayerFrame(frame)
 	frame.DebuffHighlight = self:Construct_DebuffHighlight(frame)
 	frame.HealPrediction = self:Construct_HealComm(frame)
 
-	frame.AuraBars = self:Construct_AuraBarHeader(frame)
+	frame.AuraBars = self:Construct_AuraBarHeader(frame, "Player Aura Bars")
 		
 	frame.CombatFade = true
 
@@ -1000,6 +1000,11 @@ function UF:Update_PlayerFrame(frame, db)
 	do
 		local auraBars = frame.AuraBars
 		
+		--Set size of mover
+		auraBars.Holder:Width(db.width)
+		auraBars.Holder:Height(20)
+		auraBars.Holder:GetScript('OnSizeChanged')(auraBars.Holder)
+		
 		if db.aurabar.enable then
 			if not frame:IsElementEnabled('AuraBars') then
 				frame:EnableElement('AuraBars')
@@ -1009,13 +1014,6 @@ function UF:Update_PlayerFrame(frame, db)
 			auraBars.enemyAuraType = db.aurabar.enemyAuraType
 			
 			local healthColor = UF.db.colors.health
-			local attachTo = frame
-			
-			if db.aurabar.attachTo == 'BUFFS' then
-				attachTo = frame.Buffs
-			elseif db.aurabar.attachTo == 'DEBUFFS' then
-				attachTo = frame.Debuffs
-			end
 			
 			local anchorPoint, anchorTo = 'BOTTOM', 'TOP'
 			if db.aurabar.anchorPoint == 'BELOW' then
@@ -1023,8 +1021,8 @@ function UF:Update_PlayerFrame(frame, db)
 			end
 			
 			auraBars:ClearAllPoints()
-			auraBars:SetPoint(anchorPoint..'LEFT', attachTo, anchorTo..'LEFT')
-			auraBars:SetPoint(anchorPoint..'RIGHT', attachTo, anchorTo..'RIGHT', -POWERBAR_OFFSET, 0)
+			auraBars:SetPoint(anchorPoint..'LEFT', auraBars.Holder, anchorTo..'LEFT')
+			auraBars:SetPoint(anchorPoint..'RIGHT', auraBars.Holder, anchorTo..'RIGHT', -POWERBAR_OFFSET, 0)
 
 			auraBars.buffColor = {healthColor.r, healthColor.b, healthColor.g}
 			auraBars.down = db.aurabar.anchorPoint == 'BELOW'
