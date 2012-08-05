@@ -52,7 +52,7 @@ function UF:Construct_PlayerFrame(frame)
 	frame.DebuffHighlight = self:Construct_DebuffHighlight(frame)
 	frame.HealPrediction = self:Construct_HealComm(frame)
 
-	frame.AuraBars = self:Construct_AuraBarHeader(frame)
+	frame.AuraBars = self:Construct_AuraBarHeader(frame, "Player Aura Bars")
 		
 	frame.CombatFade = true
 
@@ -280,10 +280,15 @@ function UF:Update_PlayerFrame(frame, db)
 		health.Smooth = self.db.smoothbars
 
 		--Text
-		local x, y = self:GetPositionOffset(db.health.position)
-		health.value:ClearAllPoints()
-		health.value:Point(db.health.position, health, db.health.position, x, y)
-		frame:Tag(health.value, db.health.text_format)
+		if db.health.text then
+			health.value:Show()
+			
+			local x, y = self:GetPositionOffset(db.health.position)
+			health.value:ClearAllPoints()
+			health.value:Point(db.health.position, health, db.health.position, x, y)
+		else
+			health.value:Hide()
+		end
 		
 		--Colors
 		health.colorSmooth = nil
@@ -345,13 +350,17 @@ function UF:Update_PlayerFrame(frame, db)
 	--Name
 	do
 		local name = frame.Name
-		if not db.power.hideonnpc then
-			local x, y = self:GetPositionOffset(db.name.position)
-			name:ClearAllPoints()
-			name:Point(db.name.position, frame.Health, db.name.position, x, y)				
+		if db.name.enable then
+			name:Show()
+			
+			if not db.power.hideonnpc then
+				local x, y = self:GetPositionOffset(db.name.position)
+				name:ClearAllPoints()
+				name:Point(db.name.position, frame.Health, db.name.position, x, y)				
+			end
+		else
+			name:Hide()
 		end
-		
-		frame:Tag(name, db.name.text_format)
 	end	
 	
 	--Power
@@ -366,10 +375,15 @@ function UF:Update_PlayerFrame(frame, db)
 			power.Smooth = self.db.smoothbars
 			
 			--Text
-			local x, y = self:GetPositionOffset(db.power.position)
-			power.value:ClearAllPoints()
-			power.value:Point(db.power.position, frame.Health, db.power.position, x, y)		
-			frame:Tag(power.value, db.power.text_format)
+			if db.power.text then
+				power.value:Show()
+				
+				local x, y = self:GetPositionOffset(db.power.position)
+				power.value:ClearAllPoints()
+				power.value:Point(db.power.position, frame.Health, db.power.position, x, y)			
+			else
+				power.value:Hide()
+			end
 			
 			--Colors
 			power.colorClass = nil
@@ -986,6 +1000,11 @@ function UF:Update_PlayerFrame(frame, db)
 	do
 		local auraBars = frame.AuraBars
 		
+		--Set size of mover
+		auraBars.Holder:Width(db.width)
+		auraBars.Holder:Height(20)
+		auraBars.Holder:GetScript('OnSizeChanged')(auraBars.Holder)
+		
 		if db.aurabar.enable then
 			if not frame:IsElementEnabled('AuraBars') then
 				frame:EnableElement('AuraBars')
@@ -995,13 +1014,6 @@ function UF:Update_PlayerFrame(frame, db)
 			auraBars.enemyAuraType = db.aurabar.enemyAuraType
 			
 			local healthColor = UF.db.colors.health
-			local attachTo = frame
-			
-			if db.aurabar.attachTo == 'BUFFS' then
-				attachTo = frame.Buffs
-			elseif db.aurabar.attachTo == 'DEBUFFS' then
-				attachTo = frame.Debuffs
-			end
 			
 			local anchorPoint, anchorTo = 'BOTTOM', 'TOP'
 			if db.aurabar.anchorPoint == 'BELOW' then
@@ -1009,8 +1021,8 @@ function UF:Update_PlayerFrame(frame, db)
 			end
 			
 			auraBars:ClearAllPoints()
-			auraBars:SetPoint(anchorPoint..'LEFT', attachTo, anchorTo..'LEFT')
-			auraBars:SetPoint(anchorPoint..'RIGHT', attachTo, anchorTo..'RIGHT', -POWERBAR_OFFSET, 0)
+			auraBars:SetPoint(anchorPoint..'LEFT', auraBars.Holder, anchorTo..'LEFT')
+			auraBars:SetPoint(anchorPoint..'RIGHT', auraBars.Holder, anchorTo..'RIGHT', -POWERBAR_OFFSET, 0)
 
 			auraBars.buffColor = {healthColor.r, healthColor.b, healthColor.g}
 			auraBars.down = db.aurabar.anchorPoint == 'BELOW'
