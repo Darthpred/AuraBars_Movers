@@ -1,0 +1,16 @@
+﻿## Interface: 40300
+## Title: |cff1784d1ElvUI |r Aura Bars Mover
+## Author: Darth Predator
+## Version: 1.3
+## Notes: A Microbar module for |cff1784d1ElvUI|r.
+## Notes-ruRU: Модуль микроменю для |cff1784d1ElvUI|r.
+## eMail: darthpred@gmail.com
+## URL: 
+## RequiredDeps: ElvUI
+## DefaultState: Enabled
+
+construct.lua
+player.lua
+target.lua
+focus.lua
+update.lua
