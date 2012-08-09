@@ -1,9 +1,9 @@
 ﻿## Interface: 40300
 ## Title: |cff1784d1ElvUI |r Aura Bars Mover
 ## Author: Darth Predator
-## Version: 1.3
-## Notes: A Microbar module for |cff1784d1ElvUI|r.
-## Notes-ruRU: Модуль микроменю для |cff1784d1ElvUI|r.
+## Version: 0.5
+## Notes: Moveble unit aura bars for |cff1784d1ElvUI|r.
+## Notes-ruRU: Возможноть перемещения полос аур в |cff1784d1ElvUI|r.
 ## eMail: darthpred@gmail.com
 ## URL: 
 ## RequiredDeps: ElvUI
