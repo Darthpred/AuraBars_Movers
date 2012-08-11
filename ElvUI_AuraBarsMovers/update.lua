@@ -2,7 +2,9 @@ local E, L, V, P, G, _ = unpack(ElvUI); --Inport: Engine, Locales, PrivateDB, Pr
 local UF = E:GetModule('UnitFrames');
 local LSM = LibStub("LibSharedMedia-3.0");
 
-function UF:SmartAuraDisplayABM()
+UF.SmartAuraDisplayABM = UF.SmartAuraDisplay
+function UF:SmartAuraDisplay()
+	UF.SmartAuraDisplayABM(self)
 	local db = self.db
 	local unit = self.unit
 	if not db or not db.smartAuraDisplay or db.smartAuraDisplay == 'DISABLED' or not UnitExists(unit) then return; end

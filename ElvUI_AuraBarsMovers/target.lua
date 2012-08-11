@@ -6,7 +6,7 @@ local ReplaceInsert = false
 UF.Update_TargetFrameABM = UF.Update_TargetFrame
 function UF:Update_TargetFrame(frame, db)
 	if not ReplaceInsert then --Checking if we replaced the smart aura thing
-		table.insert(frame.__elements, UF.SmartAuraDisplayABM)
+		table.insert(frame.__elements, UF.SmartAuraDisplay)
 		ReplaceInsert = true
 	end
 	UF:Update_TargetFrameABM(frame, db)
