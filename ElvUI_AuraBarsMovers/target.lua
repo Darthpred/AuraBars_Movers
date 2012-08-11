@@ -1,8 +1,14 @@
 local E, L, V, P, G, _ = unpack(ElvUI); --Inport: Engine, Locales, PrivateDB, ProfileDB, GlobalDB, Localize Underscore
 local UF = E:GetModule('UnitFrames');
+local ReplaceInsert = false
+
 
 UF.Update_TargetFrameABM = UF.Update_TargetFrame
 function UF:Update_TargetFrame(frame, db)
+	if not ReplaceInsert then --Checking if we replaced the smart aura thing
+		table.insert(frame.__elements, UF.SmartAuraDisplayABM)
+		ReplaceInsert = true
+	end
 	UF:Update_TargetFrameABM(frame, db)
 	
 	frame.db = db
@@ -38,10 +44,6 @@ function UF:Update_TargetFrame(frame, db)
 			auraBars.buffColor = {healthColor.r, healthColor.b, healthColor.g}
 			auraBars.down = db.aurabar.anchorPoint == 'BELOW'
 			auraBars:SetAnchors()
-			
-			--We do this to prevent the AuraBars being anchored to buffs or debuffs when "Smart Auras" setting is used
-			--The code which repositions Aura Bars is in update_elements.lua line 1325 and line 1340
-			auraBars.SetPoint = noop
 		else
 			if frame:IsElementEnabled('AuraBars') then
 				frame:DisableElement('AuraBars')
