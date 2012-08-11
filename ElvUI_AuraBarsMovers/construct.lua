@@ -46,38 +46,4 @@ function ABM:Initialize()
 	ABM:FocusABmove()
 end
 
-
 E:RegisterModule(ABM:GetName())
-
---[[function UF:Construct_AuraBarHeader(frame)
-	local auraBar = CreateFrame('Frame', nil, frame)
-	auraBar.PostCreateBar = UF.Construct_AuraBars
-	auraBar.gap = 1
-	auraBar.spacing = 1
-	auraBar.spark = true
-	auraBar.sort = true
-	auraBar.debuffColor = {0.8, 0.1, 0.1}
-	auraBar.filter = UF.AuraBarFilter
-
-	--Create Holder frame for our AuraBar Mover
-	local holder = CreateFrame('Frame', nil, auraBar)
-	holder:Point("BOTTOM", frame, "TOP", 0, 0)
-	auraBar:SetPoint("BOTTOM", holder, "TOP", 0, 0)
-	auraBar.Holder = holder
-	
-	hooksecurefunc(GameTooltip, "SetUnitAura", function(self,...)
-		if self.auraBarLine and self.numLines ~= self:NumLines() then
-			self:AddLine(L['Hold shift + right click to blacklist this aura.'])
-			if not self.numLines then
-				self.numLines = self:NumLines()
-			end
-		end
-	end)	
-	
-	--Create the AuraBar Mover
-	if MovName then
-		E:CreateMover(auraBar.Holder, frame:GetName()..'AuraMover',  MovName, nil, nil, nil, 'ALL,SOLO')
-	end
-	print("1")
-	return auraBar
-end]]
