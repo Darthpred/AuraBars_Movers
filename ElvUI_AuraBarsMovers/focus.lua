@@ -4,7 +4,7 @@ local ReplaceInsert = false
 
 UF.Update_FocusFrameABM = UF.Update_FocusFrame
 function UF:Update_FocusFrame(frame, db)
-	if not ReplaceInsert then --Checking if we replaced the smart aura thing
+	if not ReplaceInsert then --Checking if we inserted the smart aura thing
 		table.insert(frame.__elements, UF.SmartAuraDisplay)
 		ReplaceInsert = true
 	end
