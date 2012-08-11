@@ -1,12 +1,13 @@
 ﻿## Interface: 40300
 ## Title: |cff1784d1ElvUI |r Aura Bars Mover
-## Author: Darth Predator, Blazeflack
-## Version: 1.0
+## Author: Darth Predator
+## Version: 0.5
 ## Notes: Moveble unit aura bars for |cff1784d1ElvUI|r.
 ## Notes-ruRU: Возможноть перемещения полос аур в |cff1784d1ElvUI|r.
 ## eMail: darthpred@gmail.com
 ## URL: 
 ## RequiredDeps: ElvUI
+## OptionalDeps: ElvUI_SLE
 ## DefaultState: Enabled
 
 core.lua
