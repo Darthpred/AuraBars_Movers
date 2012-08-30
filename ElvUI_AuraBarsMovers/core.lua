@@ -52,7 +52,7 @@ function UF:SmartAuraDisplay()
 	local auraBars = self.AuraBars
 	local isFriend
 	if UnitIsFriend('player', unit) then isFriend = true end
-	
+
 	if isFriend then
 		if db.smartAuraDisplay == 'SHOW_DEBUFFS_ON_FRIENDLIES' then
 			buffs:Hide()
@@ -155,6 +155,7 @@ UF.Update_TargetFrameABM = UF.Update_TargetFrame
 function UF:Update_TargetFrame(frame, db)
 	if not targetInsert then --Checking if we inserted the smart aura thing
 		table.insert(frame.__elements, UF.SmartAuraDisplay)
+		frame:RegisterEvent('PLAYER_TARGET_CHANGED', UF.SmartAuraDisplay)
 		targetInsert = true
 	end
 	UF:Update_TargetFrameABM(frame, db)
@@ -207,6 +208,7 @@ UF.Update_FocusFrameABM = UF.Update_FocusFrame
 function UF:Update_FocusFrame(frame, db)
 	if not focusInsert then --Checking if we inserted the smart aura thing
 		table.insert(frame.__elements, UF.SmartAuraDisplay)
+		frame:RegisterEvent('PLAYER_FOCUS_CHANGED', UF.SmartAuraDisplay)
 		focusInsert = true
 	end
 	UF:Update_FocusFrameABM(frame, db)
