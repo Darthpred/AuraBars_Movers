@@ -126,7 +126,8 @@ function UF:Update_PlayerFrame(frame, db)
 			auraBars.friendlyAuraType = db.aurabar.friendlyAuraType
 			auraBars.enemyAuraType = db.aurabar.enemyAuraType
 			
-			local healthColor = UF.db.colors.health
+			local buffColor = UF.db.colors.auraBarBuff
+			local debuffColor = UF.db.colors.auraBarDebuff
 			
 			local anchorPoint, anchorTo = 'BOTTOM', 'TOP'
 			if db.aurabar.anchorPoint == 'BELOW' then
@@ -137,7 +138,8 @@ function UF:Update_PlayerFrame(frame, db)
 			auraBars:SetPoint(anchorPoint..'LEFT', auraBars.Holder, anchorTo..'LEFT')
 			auraBars:SetPoint(anchorPoint..'RIGHT', auraBars.Holder, anchorTo..'RIGHT', -POWERBAR_OFFSET, 0)
 
-			auraBars.buffColor = {healthColor.r, healthColor.b, healthColor.g}
+			auraBars.buffColor = {buffColor.r, buffColor.g, buffColor.b}
+			auraBars.debuffColor = {debuffColor.r, debuffColor.g, debuffColor.b}
 			auraBars.down = db.aurabar.anchorPoint == 'BELOW'
 			auraBars:SetAnchors()
 		else
@@ -180,7 +182,8 @@ function UF:Update_TargetFrame(frame, db)
 			auraBars.friendlyAuraType = db.aurabar.friendlyAuraType
 			auraBars.enemyAuraType = db.aurabar.enemyAuraType			
 			
-			local healthColor = UF.db.colors.health
+			local buffColor = UF.db.colors.auraBarBuff
+			local debuffColor = UF.db.colors.auraBarDebuff
 			
 			local anchorPoint, anchorTo = 'BOTTOM', 'TOP'
 			if db.aurabar.anchorPoint == 'BELOW' then
@@ -190,7 +193,9 @@ function UF:Update_TargetFrame(frame, db)
 			auraBars:ClearAllPoints()
 			auraBars:SetPoint(anchorPoint..'LEFT', auraBars.Holder, anchorTo..'LEFT', POWERBAR_OFFSET, 0)
 			auraBars:SetPoint(anchorPoint..'RIGHT', auraBars.Holder, anchorTo..'RIGHT')
-			auraBars.buffColor = {healthColor.r, healthColor.b, healthColor.g}
+			
+			auraBars.buffColor = {buffColor.r, buffColor.g, buffColor.b}
+			auraBars.debuffColor = {debuffColor.r, debuffColor.g, debuffColor.b}
 			auraBars.down = db.aurabar.anchorPoint == 'BELOW'
 			auraBars:SetAnchors()
 		else
@@ -234,7 +239,8 @@ function UF:Update_FocusFrame(frame, db)
 			auraBars.friendlyAuraType = db.aurabar.friendlyAuraType
 			auraBars.enemyAuraType = db.aurabar.enemyAuraType
 			
-			local healthColor = UF.db.colors.health
+			local buffColor = UF.db.colors.auraBarBuff
+			local debuffColor = UF.db.colors.auraBarDebuff
 			
 			local anchorPoint, anchorTo = 'BOTTOM', 'TOP'
 			if db.aurabar.anchorPoint == 'BELOW' then
@@ -244,7 +250,9 @@ function UF:Update_FocusFrame(frame, db)
 			auraBars:ClearAllPoints()
 			auraBars:SetPoint(anchorPoint..'LEFT', auraBars.Holder, anchorTo..'LEFT', POWERBAR_OFFSET, 0)
 			auraBars:SetPoint(anchorPoint..'RIGHT', auraBars.Holder, anchorTo..'RIGHT', -POWERBAR_OFFSET, 0)
-			auraBars.buffColor = {healthColor.r, healthColor.b, healthColor.g}
+			
+			auraBars.buffColor = {buffColor.r, buffColor.g, buffColor.b}
+			auraBars.debuffColor = {debuffColor.r, debuffColor.g, debuffColor.b}
 			auraBars.down = db.aurabar.anchorPoint == 'BELOW'
 			auraBars:SetAnchors()
 		else
