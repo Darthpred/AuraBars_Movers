@@ -1,9 +1,12 @@
 local E, L, V, P, G, _ = unpack(ElvUI); --Inport: Engine, Locales, PrivateDB, ProfileDB, GlobalDB, Localize Underscore
 local ABM = E:NewModule('AuraMover', 'AceHook-3.0', 'AceEvent-3.0');
 local UF = E:GetModule('UnitFrames');
-local LSM = LibStub("LibSharedMedia-3.0");
 local targetInsert = false
 local focusInsert = false
+
+P.unitframe.units.player.abw = E.db.unitframe.units.player.width
+P.unitframe.units.target.abw = E.db.unitframe.units.target.width
+P.unitframe.units.focus.abw = E.db.unitframe.units.focus.width
 
 function ABM:PlayerABmove()
 	local auraBar = ElvUF_Player.AuraBars
@@ -112,9 +115,9 @@ function UF:Update_PlayerFrame(frame, db)
 	--AuraBars
 	do
 		local auraBars = frame.AuraBars
-		
+				
 		--Set size of mover
-		auraBars.Holder:Width(db.width)
+		auraBars.Holder:Width(E.db.unitframe.units.player.abw)
 		auraBars.Holder:Height(20)
 		auraBars.Holder:GetScript('OnSizeChanged')(auraBars.Holder)
 		
@@ -170,7 +173,7 @@ function UF:Update_TargetFrame(frame, db)
 		local auraBars = frame.AuraBars
 		
 		--Set size of mover
-		auraBars.Holder:Width(db.width)
+		auraBars.Holder:Width(E.db.unitframe.units.target.abw)
 		auraBars.Holder:Height(20)
 		auraBars.Holder:GetScript('OnSizeChanged')(auraBars.Holder)
 		
@@ -226,7 +229,7 @@ function UF:Update_FocusFrame(frame, db)
 		local auraBars = frame.AuraBars
 		
 		--Set size of mover
-		auraBars.Holder:Width(db.width)
+		auraBars.Holder:Width(E.db.unitframe.units.focus.abw)
 		auraBars.Holder:Height(20)
 		auraBars.Holder:GetScript('OnSizeChanged')(auraBars.Holder)
 		

@@ -11,3 +11,4 @@
 ## DefaultState: Enabled
 
 core.lua
+options.lua
