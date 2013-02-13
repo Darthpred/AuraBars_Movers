@@ -1,4 +1,4 @@
-﻿## Interface: 40300
+﻿## Interface: 50200
 ## Title: |cff1784d1ElvUI |r Aura Bars Mover
 ## Author: Darth Predator
 ## Version: 1.02
