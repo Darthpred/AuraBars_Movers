@@ -1,7 +1,7 @@
 ﻿## Interface: 50200
 ## Title: |cff1784d1ElvUI |r Aura Bars Mover
 ## Author: Darth Predator
-## Version: 1.02
+## Version: 1.03
 ## Notes: Moveble unit aura bars for |cff1784d1ElvUI|r.
 ## Notes-ruRU: Возможноть перемещения полос аур в |cff1784d1ElvUI|r.
 ## eMail: darthpred@gmail.com
