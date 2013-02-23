@@ -33,7 +33,7 @@ end
 local ConfFrame = CreateFrame('Frame')
 ConfFrame:RegisterEvent('ADDON_LOADED')
 ConfFrame:SetScript('OnEvent',function(self, event, addon)
-    if event == 'ADDON_LOADED' and addon == 'ElvUI_Config' then
+    if addon == 'ElvUI_Config' then
         configTable()
         ConfFrame:UnregisterEvent('ADDON_LOADED')
     end
