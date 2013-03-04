@@ -1,5 +1,5 @@
 ﻿## Interface: 50200
-## Title: |cff1784d1ElvUI |r Aura Bars Mover
+## Title: ElvUI: Aura Bars Mover
 ## Author: Darth Predator
 ## Version: 1.03
 ## Notes: Moveble unit aura bars for |cff1784d1ElvUI|r.
@@ -10,5 +10,7 @@
 ## OptionalDeps: ElvUI_SLE
 ## DefaultState: Enabled
 
+LibElvUIPlugin-1.0\locales\load_locales.xml
+LibElvUIPlugin-1.0\LibElvUIPlugin-1.0.lua
 core.lua
 options.lua

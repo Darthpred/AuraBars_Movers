@@ -3,6 +3,8 @@ local ABM = E:NewModule('AuraMover', 'AceHook-3.0', 'AceEvent-3.0');
 local UF = E:GetModule('UnitFrames');
 local targetInsert = false
 local focusInsert = false
+local EP = LibStub("LibElvUIPlugin-1.0")
+local addon = ...
 
 P.unitframe.units.player.abw = E.db.unitframe.units.player.width
 P.unitframe.units.target.abw = E.db.unitframe.units.target.width
@@ -270,6 +272,7 @@ function UF:Update_FocusFrame(frame, db)
 end
 
 function ABM:Initialize()
+	EP:RegisterPlugin(addon,ABM.GetOptions)
 	ABM:PlayerABmove()
 	ABM:TargetABmove()
 	ABM:FocusABmove()
