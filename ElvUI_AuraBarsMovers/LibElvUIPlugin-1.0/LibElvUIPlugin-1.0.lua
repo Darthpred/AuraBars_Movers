@@ -1,6 +1,6 @@
 if not ElvUI then return end
 
-local MAJOR, MINOR = "LibElvUIPlugin-1.0", 7
+local MAJOR, MINOR = "LibElvUIPlugin-1.0", 9
 local lib, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 
 
@@ -35,7 +35,8 @@ function lib:RegisterPlugin(name,callback)
 	plugin.callback = callback
 	lib.plugins[name] = plugin
 	local enabled, loadable = select(4,GetAddOnInfo("ElvUI_Config"))
-	if enabled and loadable then
+	local loaded = IsAddOnLoaded("ElvUI_Config")
+	if enabled and loadable and not loaded then
 		if not lib.ConfigFrame then
 			local configFrame = CreateFrame("Frame")
 			configFrame:RegisterEvent("ADDON_LOADED")
@@ -82,7 +83,7 @@ function lib:SetupVersionCheck(plugin)
 	RegisterAddonMessagePrefix(prefix)
 	local function SendRecieve(self, event, mprefix, message, channel, sender)
 		if event == "CHAT_MSG_ADDON" then
-			if sender == E.myname or not sender or mprefix ~= prefix then return end
+			if sender == E.myname or not sender or mprefix ~= prefix  or plugin.name == MAJOR then return end
 			
 			if not E[plugin.name.."recievedOutOfDateMessage"] then
 				if plugin.version ~= 'BETA' and tonumber(message) ~= nil and tonumber(message) > tonumber(plugin.version) then
